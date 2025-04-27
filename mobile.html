@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Summarize YouTube comments instantly using AI. Install this page as an app for easy access.">
+  <title>Mobile Summarizer - YouTube Comment Summarizer</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fafafa;
+      padding: 20px;
+      text-align: center;
+      color: #333;
+    }
+    h1 {
+      color: #4a148c;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 12px 24px;
+      background-color: #7e57c2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #summaryBox {
+      margin-top: 30px;
+      text-align: left;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    #installBanner {
+      margin-top: 20px;
+      padding: 10px;
+      background: #e0f7fa;
+      border: 1px solid #81d4fa;
+      border-radius: 5px;
+      display: none;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+    }
+    footer a {
+      color: #4a148c;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Summarize YouTube Comments</h1>
+  <p>Paste a YouTube video link below:</p>
+
+  <input type="text" id="youtubeUrl" placeholder="Enter YouTube video URL">
+  <br>
+  <button onclick="summarizeComments()">Summarize</button>
+
+  <div id="summaryBox" style="display:none;"></div>
+
+  <div id="installBanner">
+    <p>Install this page as an app for faster access! Tap <strong>Share</strong> and then <strong>Add to Home Screen</strong>.</p>
+  </div>
+
+  <footer>
+    <p><a href="index.html">← Back to Home</a> | <a href="privacy.html">Privacy Policy</a></p>
+  </footer>
+
+<script>
+  async function summarizeComments() {
+    const urlInput = document.getElementById("youtubeUrl").value.trim();
+    const summaryBox = document.getElementById("summaryBox");
+    summaryBox.style.display = "none";
+    summaryBox.textContent = "";
+
+    if (!urlInput.includes("youtube.com/watch")) {
+      alert("Please enter a valid YouTube video URL.");
+      return;
+    }
+
+    const urlParams = new URLSearchParams(new URL(urlInput).search);
+    const videoId = urlParams.get("v");
+
+    if (!videoId) {
+      alert("Could not extract Video ID from the URL.");
+      return;
+    }
+
+    summaryBox.innerHTML = "<em>Generating summary...</em>";
+    summaryBox.style.display = "block";
+
+    try {
+      const response = await fetch("https://yt-comments-summarizer-api.onrender.com/summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoId })
+      });
+
+      const data = await response.json();
+
+      if (data.summary) {
+        summaryBox.innerHTML = `<strong>Summary:</strong><br><br> ${data.summary.replace(/\n/g, "<br>")}`;
+      } else {
+        summaryBox.innerHTML = `<strong>Error:</strong> ${data.error || "Unknown error"}`;
+      }
+    } catch (error) {
+      summaryBox.innerHTML = `<strong>Error:</strong> ${error.message}`;
+    }
+  }
+
+  // Show install instructions for iPhone/Android
+  window.addEventListener('load', () => {
+    if (/iphone|ipad|ipod|android/i.test(navigator.userAgent)) {
+      document.getElementById('installBanner').style.display = 'block';
+    }
+  });
+</script>
+
+</body>
+</html>
