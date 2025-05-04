@@ -108,7 +108,7 @@
     summaryBox.style.display = "none";
     summaryBox.textContent = "";
 
-    if (!urlInput.includes("youtube.com/watch")) and (!urlInput.includes("youtu.be"))  {
+    if (!urlInput.includes("youtube.com/watch")) && !urlInput.includes("youtu.be")  {
       alert("Please enter a valid YouTube video URL.");
       return;
     }
