@@ -92,7 +92,8 @@
 
       // Handle shortened youtu.be URL
       if (parsedUrl.hostname === "youtu.be") {
-        return parsedUrl.pathname.replace("/", "");
+        const path = parsedUrl.pathname.replace("/", "");
+        if (path.length === 11) return path;
       }
     } catch (e) {
       console.error("Invalid URL format:", e);
