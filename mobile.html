@@ -81,6 +81,26 @@
   </footer>
 
 <script>
+  function extractVideoId(url) {
+    try {
+      const parsedUrl = new URL(url);
+
+      // Handle standard YouTube URL
+      if (parsedUrl.hostname.includes("youtube.com") && parsedUrl.searchParams.has("v")) {
+        return parsedUrl.searchParams.get("v");
+      }
+
+      // Handle shortened youtu.be URL
+      if (parsedUrl.hostname === "youtu.be") {
+        return parsedUrl.pathname.replace("/", "");
+      }
+    } catch (e) {
+      console.error("Invalid URL format:", e);
+    }
+
+    return null;
+  }
+
   async function summarizeComments() {
     const urlInput = document.getElementById("youtubeUrl").value.trim();
     const summaryBox = document.getElementById("summaryBox");
@@ -92,8 +112,7 @@
       return;
     }
 
-    const urlParams = new URLSearchParams(new URL(urlInput).search);
-    const videoId = urlParams.get("v");
+    const videoId = extractVideoId(urlInput);
 
     if (!videoId) {
       alert("Could not extract Video ID from the URL.");
